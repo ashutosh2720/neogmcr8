@@ -1,18 +1,21 @@
-import { useState } from 'react'
+import { useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
-
-
+import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import Nav from "./components/Nav";
+import Home from "./pages/Home";
+import EventDescription from "./pages/EventDescription";
 
 function App() {
   return (
     <>
-      <h1 className="text-3xl font-bold underline">
-        Hello world!
-      </h1>
-      <AccountBalanceIcon />
+      <Nav />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/eventDetails/:id" element={<EventDescription />} />
+      </Routes>
+
     </>
-  )
+  );
 }
 
-export default App
+export default App;
