@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { data } from "../db/data";
 import RSVP from "../components/RSVP";
+import { useGlobalMeetup } from "../contexts/meetupContext";
 
 const EventDescription = () => {
     const [isModalopen, setModalOpen] = useState(false);
+    const { findEvent, isInRsvp } = useGlobalMeetup()
     const { id } = useParams();
-    const event = data.meetups.find((item) => item.id === id);
+    const event = findEvent(id)
     return (
         <div className="w-full h-full p-5 flex justify-center font-serif">
             <div className="left w-[50%] p-2 flex flex-col gap-3 justify-center ">
@@ -20,7 +22,7 @@ const EventDescription = () => {
                     alt=""
                     className="w-[100%] rounded-lg"
                 />
-                <h1 className="">{event.eventDescription}</h1>
+                <h1 className=" font-serif font-medium">{event.eventDescription}</h1>
                 <h1>
                     <span className="font-bold">Dress code</span> :{" "}
                     {event.additionalInformation.dressCode}
@@ -29,16 +31,24 @@ const EventDescription = () => {
                     <span className="font-bold">Age restriction</span> :{" "}
                     {event.additionalInformation.ageRestrictions}
                 </h1>
+
+                <div className="tags flex gap-4">
+                    {
+                        event.eventTags.map(tag => (
+                            <p key={tag} className='bg-red-500 text-white p-2 rounded'>{tag}</p>
+                        ))
+                    }
+                </div>
             </div>
 
             {
-                isModalopen && <RSVP />
+                isModalopen && <RSVP setModalOpen={setModalOpen} event={event} />
             }
 
             <div className="right w-[50%] flex justify-center flex-col rounded-lg items-center gap-10 pt-10">
                 <div className="timing shadow-md flex flex-col justify-center items-center gap-3 rounded-lg w-[60%] p-2 ">
-                    <h1>{event.eventStartTime}</h1>
-                    <h1>{event.eventEndTime}</h1>
+                    <p>{new Date(event.eventStartTime).toDateString()} • {new Date(event.eventStartTime).toLocaleTimeString()}  to</p>
+                    <p>{new Date(event.eventEndTime).toDateString()} • {new Date(event.eventEndTime).toLocaleTimeString()}</p>
                     <h1>{event.location}</h1>
                     <h1>{event.address}</h1>
                 </div>
@@ -60,12 +70,14 @@ const EventDescription = () => {
                     ))}
                 </div>
 
-                <button
-                    className=" bg-orange-600  rounded-md text-white pt-2 pb-2 font-bold pl-4 pr-4"
-                    onClick={() => setModalOpen(!isModalopen)}
-                >
-                    RSVP
-                </button>
+                <div className="rsvp">
+                    {
+                        isInRsvp(event.id) ?
+                            <button className='bg-red-300 cursor-not-allowed text-white px-12 min-w-[250px] py-2 rounded'>Already RSVP</button> :
+                            <button className='bg-red-500 text-white px-12 min-w-[250px] py-2 rounded' onClick={() => setModalOpen(true)}>RSVP</button>
+                    }
+
+                </div>
             </div>
         </div>
     );

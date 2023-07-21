@@ -1,22 +1,53 @@
-import React from 'react'
+import { GrClose } from 'react-icons/gr'
+import { useState } from "react";
+import { useGlobalMeetup } from "../contexts/meetupContext.jsx";
 
-function RSVP() {
+const RVSP = ({ setModalOpen, event }) => {
+    const [formInput, setFormInput] = useState({
+        name: '',
+        email: ''
+    })
+    const { rsvpFormSubmitHandler } = useGlobalMeetup()
+
+    const handleFormInput = (e) => {
+        const { name, value } = e.target
+        setFormInput(prevState => ({ ...prevState, [name]: value }))
+    }
+
+    const formSubmitHandler = (e) => {
+        e.preventDefault()
+        rsvpFormSubmitHandler({ id: event.id, ...formInput })
+        setModalOpen(false)
+    }
+
     return (
-        <div className='w-[30%] top-60 p-5 fixed bg-white justify-center items-center shadow-lg rounded-lg flex-flex-col'>
-            <h1 className='text-3xl text-center'>complete your RSVP</h1>
-            <h1 className='text-gray-500 text-center'>fill in your personal information</h1>
-
-            <form action="" className='w-[full] flex flex-col justify-center items-center p-5'>
-                <label htmlFor="">Name : </label>
-                <input type="text" name="" id="" className='border-black  border rounded-md p-1' />
-                <label htmlFor="">Email : </label>
-                <input type="email" name="" id="" className='border-black border rounded-md p-1 ' />
-                <h1>you have to make payment at the venue</h1>
-                <button className=' bg-orange-600  rounded-md text-white pt-2 pb-2 font-bold pl-4 pr-4'>RSVP</button>
-            </form>
-
+        <div className='fixed inset-0 bg-black/20 p-2 flex justify-center items-center'>
+            <div className="rsvp-form w-full sm:max-w-[400px] bg-white p-8 rounded flex flex-col gap-4 relative">
+                <div className="close-icon absolute top-2 right-2 bg-black/10 p-2 rounded-full cursor-pointer hover:bg-black/20 transition duration-700" onClick={() => setModalOpen(false)}>
+                    <GrClose />
+                </div>
+                <h1 className='text-2xl font-bold'>Complete your RSVP</h1>
+                <h2 className='text-black/60'>Fill in your personal information.</h2>
+                <form onSubmit={formSubmitHandler} className='flex flex-col gap-4'>
+                    <label htmlFor="name" className='flex flex-col gap-2'>
+                        <p>Name:</p>
+                        <input type="text" required name='name' placeholder='ex: John Doe' className='border outline-black/40 w-full p-2 rounded' value={formInput.name} onChange={handleFormInput} />
+                    </label>
+                    <label htmlFor="email" className='flex flex-col gap-2'>
+                        <p>Email:</p>
+                        <input type="text" required name='email' placeholder='ex: johndoe@email.com' className='border outline-black/40 w-full p-2 rounded' value={formInput.email} onChange={handleFormInput} />
+                    </label>
+                    {
+                        event?.isPaid &&
+                        <div className="mark text-black/60">
+                            * You have to make the payment at the venue
+                        </div>
+                    }
+                    <button className='bg-red-500 p-2 rounded text-white'>RSVP</button>
+                </form>
+            </div>
         </div>
-    )
-}
+    );
+};
 
-export default RSVP
+export default RVSP;
