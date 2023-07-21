@@ -5,6 +5,7 @@ import RSVP from "../components/RSVP";
 import { useGlobalMeetup } from "../contexts/meetupContext";
 
 const EventDescription = () => {
+    //
     const [isModalopen, setModalOpen] = useState(false);
     const { findEvent, isInRsvp } = useGlobalMeetup()
     const { id } = useParams();
